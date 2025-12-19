@@ -1,0 +1,78 @@
+# Python
+*.pyc
+*.pyo
+__pycache__/*
+.ipynb_checkpoints/*
+.coverage
+
+# Dask
+dask-worker-space/
+*scheduler_info.json
+
+# MuJoCo
+mjkey.txt
+MUJOCO_LOG.TXT
+mujocopy-buildlock
+
+# Results
+results/
+results_optbench/
+checkpoints/*
+logs/*
+slurm_logs/*
+local_logs/*
+*.log
+
+# Editor
+.vscode/*
+.*.swp
+*.vim
+
+# Miscellaneous
+.env
+ipp_nodes.txt
+.DS_Store
+quicksilver_config.json
+.fossa.yml
+env/
+*.aux
+
+# Figures
+ablation_plot/
+clustering_demo.svg
+compare_evals.pdf
+comparison/
+comparison_ablation/
+comparison_alpha/
+comparison_high_res/
+comparison_optbench/
+heatmap_figure*.pdf
+heatmap_figure*.svg
+heatmap_video*.mp4
+heatmap_video/
+histogram_figure*.pdf
+histogram_figure*.svg
+histogram_video*.mp4
+histogram_video/
+metrics.pdf
+results_single_table.tex
+results_single_table_ablation.tex
+results_single_table_alpha.tex
+results_single_table_alpha_robust.tex
+results_single_table_optbench.tex
+results_single_table_robust.tex
+results_table.tex
+results_table_ablation.tex
+results_table_alpha.tex
+results_table_alpha_robust.tex
+results_table_optbench.tex
+results_table_robust.tex
+stats_tests.tex
+stats_tests/
+stats_tests_alpha_robust/
+stats_tests_optbench/
+stats_tests_robust/
+table.pdf
+
+# Singularity
+*.sif

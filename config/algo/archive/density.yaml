@@ -1,0 +1,26 @@
+defaults:
+  - extra_fields # See extra_fields.yaml
+  - _self_
+
+domain_params:
+  bandwidth:
+    arm_100d: 10.0
+    sphere_100d: 25.6
+    sphere_multi_100d: 5.12
+    sphere_20_100d: 2.56
+    sphere_50_100d: 1.024
+    rastrigin_100d: 25.6
+    rastrigin_multi_100d: 5.12
+    flat_100d: 25.6
+    flat_multi_100d: 5.12
+    triangles_mnist: 0.05 # 0.05 * W_domain = 0.05 * 1 (since each pixel goes from 0 to 1)
+    triangles_fashion_mnist: 0.05 # 0.05 * W_domain = 0.05 * 1 (since each pixel goes from 0 to 1)
+
+args:
+  _target_: ribs.archives.DensityArchive
+  measure_dim: ${domain.config.measure_dim}
+  buffer_size: 10000
+  density_method: "kde"
+  bandwidth: ${..domain_params.bandwidth.${hydra:runtime.choices.domain}}
+  dtype: "${get_cls: numpy.float32}" # get_cls is a custom resolver defined in src/utils/hydra_utils.py
+  # No extra_fields for DensityArchive.

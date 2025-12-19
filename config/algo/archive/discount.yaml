@@ -1,0 +1,34 @@
+defaults:
+  - _self_
+
+domain_params:
+  learning_rate:
+    arm_10d: 0.001
+    arm_100d: 0.001
+
+    sphere_100d: 0.1
+    sphere_multi_100d: 0.1
+    sphere_20_100d: 0.1
+    sphere_50_100d: 0.1
+    rastrigin_100d: 0.1
+    rastrigin_multi_100d: 0.1
+    flat_100d: 0.1
+    flat_multi_100d: 0.1
+
+    mnist_bold_light_vae: 0.01
+    lsi_clip_2d: 0.02
+    triangles_mnist: 0.001
+    triangles_fashion_mnist: 0.1
+    triangles_afhq: 0.001
+    triangles_afhq_l2: 0.001
+
+args:
+  _target_: src.discount_archive.DiscountArchive
+  solution_dim: ${domain.config.solution_dim}
+  measure_dim: ${domain.config.measure_dim}
+  learning_rate: ${..domain_params.learning_rate.${hydra:runtime.choices.domain}}
+  threshold_min: ${domain.config.obj_low}
+  initial_train_points: 1000
+  empty_points: 100
+  train_freq: 1 # Train on every iteration.
+  dtype: "${get_cls: numpy.float32}"

@@ -1,0 +1,27 @@
+# sigma0 for EvolutionStrategyEmitter.
+domain_to_sigma0:
+  arm_10d: 0.2
+  arm_12d: 0.2
+  arm_100d: 0.2
+  arm_128d: 0.2
+  sphere_128d: 0.5
+  sphere_100d: 0.5
+  sphere_multi_100d: 0.5
+  sphere_20_100d: 0.5
+  sphere_50_100d: 0.5
+  rastrigin_100d: 0.5
+  rastrigin_multi_100d: 0.5
+  flat_100d: 0.5
+  flat_multi_100d: 0.5
+  mnist_bold_light: 0.2
+  mnist_bold_light_mlp: 0.2
+  mnist_bold_light_ae: 0.2
+  mnist_bold_light_vae: 0.2
+  mnist_digits_06: 0.2
+  lsi_clip_2d: 0.02
+  lsi_face: 0.02
+  # Follows the default initial std for PGPE on triangles domain.
+  triangles_mnist: 0.1
+  triangles_fashion_mnist: 0.1
+  triangles_afhq: 0.1
+  triangles_afhq_l2: 0.1

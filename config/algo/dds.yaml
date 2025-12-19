@@ -1,0 +1,14 @@
+# Density Descent Search (DDS).
+emitters: ${oc.dict.values:._emitter_dict}
+_emitter_dict:
+  e1:
+    num: 15
+
+pass_result_archive_to_emitters: true
+
+defaults:
+  - archive: density
+  - result_archive: grid_100
+  - scheduler: scheduler
+  - emitters@_emitter_dict.e1.type: es_density
+  - _self_

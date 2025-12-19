@@ -1,0 +1,28 @@
+# Hydra (or OmegaConf) has no way to set a list of same config groups (the dict will
+# combine them into one key). So this is a hack to define unique names for them in
+# `defaults` and combine into a list. To modify, the idea would be to define more
+# elements in defaults. This would automatically combine them. Different types of
+# emitters (or different emitter configs) can be merged similarly by providing the
+# corresponding config file name in `defaults`.
+#
+# Relevant issues:
+# - https://github.com/facebookresearch/hydra/issues/499
+# - https://github.com/facebookresearch/hydra/issues/2027
+# - https://github.com/facebookresearch/hydra/issues/1939
+emitters: ${oc.dict.values:._emitter_dict}
+_emitter_dict:
+  # All emitter types specified in defaults list should have a key named <ID> here
+  # (program will throw an error otherwise when instantiating emitters)
+  e1: # This should match the <ID> in the defaults list
+    # Number of emitters of the type specified by <ID> in the defaults list
+    num: ${...domain_to_e1_num.${hydra:runtime.choices.domain}}
+
+defaults:
+  - e1_num
+  - archive: grid_100_mae
+  - result_archive: grid_100
+  - scheduler: scheduler
+  # Specify types of emitters as emitters@_emitter_dict.<ID>.type: ...
+  # <ID> can be anything unique (e.g., e1, e2, etc.)
+  - emitters@_emitter_dict.e1.type: es_imp
+  - _self_

@@ -1,0 +1,3 @@
+args:
+  _target_: ribs.schedulers.Scheduler
+  add_mode: batch

@@ -1,0 +1,133 @@
+[project]
+name = "discount_models"
+version = "0.1.0"
+description = "Discount Models Project Repo"
+readme = "README.md"
+requires-python = "~=3.12.0"
+dependencies = [
+    "adjusttext>=1.3.0",
+    "clip",
+    "cloudpickle>=3.1.2",
+    "einops==0.8.0",
+    "fire>=0.7.1",
+    "hydra-colorlog>=1.2.0",
+    "hydra-core>=1.3.2",
+    "hydra-joblib-launcher>=1.2.0",
+    "jax[cuda12]>=0.5.3",
+    "logdir>=0.13.0",
+    "loguru>=0.7.3",
+    "ninja>=1.13.0",
+    "numpy==2.2.6",
+    "numpy-groupies==0.11.3",
+    "opencv-python>=4.12.0.88",
+    "pingouin>=0.5.5",
+    "pyglet>=2.1.11",
+    "python-slugify>=8.0.4",
+    "pyyaml>=6.0.3",
+    "requests>=2.32.5",
+    "ribs[all]==0.9.0",
+    "ruamel-yaml>=0.18.16",
+    "seaborn>=0.13.2",
+    "statsmodels>=0.14.6",
+    "tensorboard>=2.20.0",
+    "threadpoolctl==3.6.0",
+    "torch==2.7.0",
+    "torchvision==0.22.0",
+    "tqdm>=4.67.1",
+    "zuko>=1.5.0",
+]
+
+[dependency-groups]
+dev = [
+    "jupyter-ruff>=0.3.0",
+    "jupyterlab>=4.5.0",
+    "jupyterlab-vim>=4.1.4",
+    "pyinstrument>=5.1.1",
+    "pylint>=4.0.4",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.14.8",
+]
+
+[tool.ruff.lint]
+# Reference: https://docs.astral.sh/ruff/rules/
+select = [
+  # "ANN",  # flake8-annotations
+  "B",  # flake8-bugbear
+  "A",  # flake8-builtins
+  "COM818",  # trailing-comma-on-bare-tuple
+  "C4",  # flake8-comprehensions
+  "EXE",  # flake8-executable
+  "FA",  # flake8-future-annotations
+  "PIE",  # flake8-pie
+  "RSE",  # flake8-raise
+  "SIM",  # flake8-simplify
+  "TD",  # flake8-todos
+  "ARG",  # flake8-unused-arguments
+  "FLY",  # flynt
+  "I",  # isort
+  "NPY",  # numpy
+  "PD",  # pandas-vet
+  "D",  # pydocstyle
+  "PL",  # pylint
+  "PYI",  # flake8-pyi
+  "PT",  # pytest
+  "N",  # pep8-naming
+  "E",  # pycodestyle errors
+  "W",  # pycodestyle warnings
+  "F",  # pyflakes
+  "UP",  # pyupgrade
+  "RUF",  # ruff-specific rules
+]
+ignore = [
+  "B024",  # abstract-base-class-without-abstract-method; we have base classes where no methods are abstract.
+  "B027",  # empty-method-without-abstract-decorator; we have base class methods that are empty.
+  "E501",  # line-too-long; we already have the formatter.
+  "ARG002",  # unused-method-argument; we have many cases where arguments have to be included for API compatibility.
+  "RUF022",  # unsorted-dunder-all; we sort it ourselves.
+  "SIM108",  # if-else-block-instead-of-if-exp; rather opinionated.
+  "PT011",  # pytest-raises-too-broad
+  "PT030",  # pytest-warns-too-broad
+  "PLR2004",  # magic-value-comparison
+  "PLC0415",  # import-outside-top-level
+  "PLC0206",  # dict-index-missing-items
+  "PLW2901",  # redefined-loop-name
+  "D107",  # undocumented-public-init; we document the class rather than __init__
+  # These require docstrings everywhere, which is not as necessary for research code.
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  # These are pylint's errors about "too many X"
+  "PLR0904",
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0914",
+  "PLR0915",
+  "PLR0916",
+  "PLR0917",
+  "PLR1702",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*" = ["D"]
+
+[tool.ruff.lint.pep8-naming]
+ignore-names = [
+  "F",  # torch.nn.functional
+  "G",  # GAN generator
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.pytest.ini_options]
+python_files = "*_test.py"
+
+[tool.uv.sources]
+clip = { git = "https://github.com/openai/CLIP.git" }

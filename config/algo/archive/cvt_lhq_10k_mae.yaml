@@ -1,0 +1,12 @@
+defaults:
+  - cvt_lhq_10k
+  - extra_fields # See extra_fields.yaml
+  - _self_
+
+domain_params:
+  learning_rate:
+    lsi_face: 0.01
+
+args:
+  threshold_min: ${domain.config.obj_low}
+  learning_rate: ${..domain_params.learning_rate.${hydra:runtime.choices.domain}}

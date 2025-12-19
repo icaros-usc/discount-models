@@ -1,0 +1,65 @@
+domain_to_params:
+  sphere_100d:
+    iso_sigma: 0.5
+    line_sigma: 0.2
+  sphere_multi_100d:
+    iso_sigma: 0.5
+    line_sigma: 0.2
+  sphere_20_100d:
+    iso_sigma: 0.5
+    line_sigma: 0.2
+  sphere_50_100d:
+    iso_sigma: 0.5
+    line_sigma: 0.2
+  rastrigin_100d:
+    iso_sigma: 0.5
+    line_sigma: 0.2
+  rastrigin_multi_100d:
+    iso_sigma: 0.5
+    line_sigma: 0.2
+  flat_100d:
+    iso_sigma: 0.5
+    line_sigma: 0.2
+  flat_multi_100d:
+    iso_sigma: 0.5
+    line_sigma: 0.2
+  arm_100d:
+    iso_sigma: 0.1
+    line_sigma: 0.2
+  lsi_clip_2d:
+    iso_sigma: 0.1
+    line_sigma: 0.2
+  lsi_face:
+    iso_sigma: 0.1
+    line_sigma: 0.2
+  triangles_mnist:
+    iso_sigma: 0.1
+    line_sigma: 0.2
+  triangles_fashion_mnist:
+    iso_sigma: 0.1
+    line_sigma: 0.2
+  triangles_afhq:
+    iso_sigma: 0.1
+    line_sigma: 0.2
+
+domain_to_batch_size:
+  sphere_100d: 540
+  sphere_multi_100d: 540
+  sphere_20_100d: 540
+  sphere_50_100d: 540
+  rastrigin_100d: 540
+  rastrigin_multi_100d: 540
+  flat_100d: 540
+  flat_multi_100d: 540
+  arm_100d: 540
+  lsi_clip_2d: 36
+  lsi_face: 36
+  triangles_mnist: 180 # = 5 * 36
+  triangles_fashion_mnist: 180 # = 5 * 36
+  triangles_afhq: 180 # = 5 * 36
+
+args:
+  _target_: ribs.emitters.IsoLineEmitter
+  iso_sigma: ${..domain_to_params.${hydra:runtime.choices.domain}.iso_sigma}
+  line_sigma: ${..domain_to_params.${hydra:runtime.choices.domain}.line_sigma}
+  batch_size: ${..domain_to_batch_size.${hydra:runtime.choices.domain}}

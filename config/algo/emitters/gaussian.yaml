@@ -1,0 +1,36 @@
+domain_to_sigma:
+  sphere_100d: 0.5
+  sphere_multi_100d: 0.5
+  sphere_20_100d: 0.5
+  sphere_50_100d: 0.5
+  rastrigin_100d: 0.5
+  rastrigin_multi_100d: 0.5
+  flat_100d: 0.5
+  flat_multi_100d: 0.5
+  arm_100d: 0.1
+  lsi_clip_2d: 0.1
+  lsi_face: 0.1
+  triangles_mnist: 0.1
+  triangles_fashion_mnist: 0.1
+  triangles_afhq: 0.1
+
+domain_to_batch_size:
+  sphere_100d: 540
+  sphere_multi_100d: 540
+  sphere_20_100d: 540
+  sphere_50_100d: 540
+  rastrigin_100d: 540
+  rastrigin_multi_100d: 540
+  flat_100d: 540
+  flat_multi_100d: 540
+  arm_100d: 540
+  lsi_clip_2d: 36
+  lsi_face: 36
+  triangles_mnist: 180  # = 5 * 36
+  triangles_fashion_mnist: 180  # = 5 * 36
+  triangles_afhq: 180  # = 5 * 36
+
+args:
+  _target_: ribs.emitters.GaussianEmitter
+  sigma: ${..domain_to_sigma.${hydra:runtime.choices.domain}}
+  batch_size: ${..domain_to_batch_size.${hydra:runtime.choices.domain}}

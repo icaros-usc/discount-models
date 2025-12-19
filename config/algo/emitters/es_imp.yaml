@@ -1,0 +1,31 @@
+defaults:
+  - sigma0 # See sigma0.yaml
+  - _self_
+
+domain_to_restart_rule:
+  sphere_100d: basic
+  sphere_multi_100d: 100
+  sphere_20_100d: 100
+  sphere_50_100d: 100
+  rastrigin_100d: basic
+  rastrigin_multi_100d: 100
+  flat_100d: basic
+  flat_multi_100d: 100
+  arm_100d: basic
+  lsi_face: basic
+  triangles_mnist: 50
+  triangles_fashion_mnist: 50
+
+  arm_10d: basic
+  mnist_bold_light_vae: basic
+  lsi_clip_2d: basic
+  triangles_afhq: basic
+  triangles_afhq_l2: basic
+
+args:
+  _target_: ribs.emitters.EvolutionStrategyEmitter
+  sigma0: ${..domain_to_sigma0.${hydra:runtime.choices.domain}}
+  batch_size: 36
+  ranker: imp
+  selection_rule: mu
+  restart_rule: ${..domain_to_restart_rule.${hydra:runtime.choices.domain}}

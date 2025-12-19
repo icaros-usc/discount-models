@@ -1,0 +1,11 @@
+defaults:
+  - extra_fields # See extra_fields.yaml
+  - _self_
+
+args:
+  _target_: ribs.archives.GridArchive
+  solution_dim: ${domain.config.solution_dim}
+  dims: [100, 100]
+  ranges: "${eval:'list(zip(${domain.config.measure_low},${domain.config.measure_high}))'}"
+  dtype: "${get_cls: numpy.float32}" # get_cls is a custom resolver defined in src/utils/hydra_utils.py
+  extra_fields: ${eval:"dict.get(${..domain_to_extra_fields},'${hydra:runtime.choices.domain}')"}

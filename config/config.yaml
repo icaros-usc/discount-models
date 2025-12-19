@@ -1,0 +1,35 @@
+hydra:
+  job:
+    name: ${hydra:runtime.choices.algo}__${hydra:runtime.choices.domain}
+  run:
+    dir: ./logs/${hydra:job.name}/${now:%Y-%m-%d_%H-%M-%S}_seed-${seed}
+  sweep:
+    # The directory here can't depend on hydra:job or hydra:runtime because a
+    # sweep is "above" the level of a job and so it won't have access to those
+    # job-specific configs.
+    dir: ./logs/sweeps/${now:%Y-%m-%d_%H-%M-%S}_seed-${seed}/
+    # This will actually be set on a per-command basis.
+    subdir: ${hydra:job.num}
+  # By default, Hydra colorlog puts the output file in the current directory.
+  # This PR fixes it but has not been released yet, so we make the fix here:
+  # https://github.com/facebookresearch/hydra/pull/2242
+  job_logging:
+    handlers:
+      file:
+        filename: ${hydra.runtime.output_dir}/main.log
+
+# Total iterations for the algorithm.
+itrs: 10000
+# Number of iterations to wait before recording metrics and saving heatmap.
+log_freq: 250
+# Number of iterations to wait before saving the scheduler and models.
+save_freq: 1000
+# Master seed.
+seed: null
+
+defaults:
+  - algo: null
+  - domain: null
+  - override hydra/job_logging: colorlog
+  - override hydra/hydra_logging: colorlog
+  - _self_

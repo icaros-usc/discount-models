@@ -1,0 +1,11 @@
+emitters: ${oc.dict.values:._emitter_dict}
+_emitter_dict:
+  e1:
+    num: 1
+
+defaults:
+  - archive: grid_100
+  - result_archive: null
+  - scheduler: scheduler
+  - emitters@_emitter_dict.e1.type: gaussian
+  - _self_

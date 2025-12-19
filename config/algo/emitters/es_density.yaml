@@ -1,0 +1,23 @@
+defaults:
+  - _self_
+
+density_domain_to_sigma0:
+  arm_100d: 0.5
+  sphere_100d: 1.5
+  sphere_multi_100d: 1.5
+  sphere_20_100d: 1.5
+  sphere_50_100d: 1.5
+  rastrigin_100d: 1.5
+  rastrigin_multi_100d: 1.5
+  flat_100d: 1.5
+  flat_multi_100d: 1.5
+  triangles_mnist: 0.1
+  triangles_fashion_mnist: 0.1
+
+args:
+  _target_: ribs.emitters.EvolutionStrategyEmitter
+  sigma0: ${..density_domain_to_sigma0.${hydra:runtime.choices.domain}}
+  batch_size: 36
+  ranker: density
+  selection_rule: mu
+  restart_rule: basic

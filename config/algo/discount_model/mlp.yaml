@@ -1,0 +1,34 @@
+_target_: src.models.mlp.MLPDiscountModel
+
+cfg:
+  model:
+    args:
+      _target_: src.models.mlp.MLP
+      layer_specs:
+        ${eval:'[[${domain.config.measure_dim}, 128], [128, 128], [128, 1]]'}
+      activation: "${get_cls: torch.nn.ReLU}"
+      # Inputs to the discount model's network are normalized based on the
+      # bounds of the measure space.
+      normalize: "negative_one_one" # "negative_one_one", "zero_one", False
+      norm_low: ${domain.config.measure_low}
+      norm_high: ${domain.config.measure_high}
+
+  init:
+    weights:
+      func: pytorch_default
+
+  optimizer:
+    args:
+      _target_: torch.optim.Adam
+      lr: 0.001
+      betas: [0.9, 0.999]
+
+  train:
+    # Trains for at most the given epochs. If we achieve the given cutoff_loss,
+    # we stop immediately. The loss is the MSE between the targets and the
+    # output of the discount function. To always train for a specific number of
+    # epochs, set cutoff_loss to 0.
+    epochs: 5
+    cutoff_loss:
+      ${eval:'0.05 * (${domain.config.obj_high} - ${domain.config.obj_low})'}
+    batch_size: 32

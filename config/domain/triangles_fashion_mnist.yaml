@@ -1,0 +1,6 @@
+defaults:
+  - triangles_mnist
+  - _self_
+
+config:
+  centroids: "src/cvt/centroids/fashion_1000_centroids.npy"

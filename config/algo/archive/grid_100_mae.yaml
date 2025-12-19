@@ -1,0 +1,22 @@
+defaults:
+  - extra_fields # See extra_fields.yaml
+  - _self_
+
+domain_params:
+  learning_rate:
+    arm_10d: 0.01
+    arm_100d: 0.01
+    sphere_100d: 0.01
+    rastrigin_100d: 0.01
+    flat_100d: 0.01
+    mnist_bold_light_vae: 0.01
+
+args:
+  _target_: ribs.archives.GridArchive
+  solution_dim: ${domain.config.solution_dim}
+  dims: [100, 100]
+  ranges: "${eval:'list(zip(${domain.config.measure_low},${domain.config.measure_high}))'}"
+  threshold_min: ${domain.config.obj_low}
+  learning_rate: ${..domain_params.learning_rate.${hydra:runtime.choices.domain}}
+  dtype: "${get_cls: numpy.float32}" # get_cls is a custom resolver defined in src/utils/hydra_utils.py
+  extra_fields: ${eval:"dict.get(${..domain_to_extra_fields},'${hydra:runtime.choices.domain}')"}

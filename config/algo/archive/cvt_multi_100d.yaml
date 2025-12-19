@@ -1,0 +1,14 @@
+defaults:
+  - extra_fields # See extra_fields.yaml
+  - _self_
+
+args:
+  _target_: ribs.archives.CVTArchive
+  centroids: "src/cvt/centroids/flat_multi_100d.npy"
+  solution_dim: ${domain.config.solution_dim}
+  ranges: "${eval:'list(zip(${domain.config.measure_low},${domain.config.measure_high}))'}"
+  nearest_neighbors: "scipy_kd_tree"
+  kdtree_query_kwargs:
+    workers: 8
+  dtype: "${get_cls: numpy.float32}"
+  extra_fields: ${eval:"dict.get(${..domain_to_extra_fields},'${hydra:runtime.choices.domain}')"}

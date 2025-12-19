@@ -1,0 +1,16 @@
+domain_to_e1_num:
+  sphere_100d: 15
+  sphere_multi_100d: 15
+  sphere_20_100d: 15
+  sphere_50_100d: 15
+  rastrigin_100d: 15
+  rastrigin_multi_100d: 15
+  flat_100d: 15
+  flat_multi_100d: 15
+  arm_100d: 15
+  lsi_clip_2d: 1
+  lsi_face: 1
+  triangles_mnist: 5
+  triangles_fashion_mnist: 5
+  triangles_afhq: 5
+  triangles_afhq_l2: 5

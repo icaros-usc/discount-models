@@ -1,0 +1,16 @@
+# Discount Model Search (DMS).
+emitters: ${oc.dict.values:._emitter_dict}
+_emitter_dict:
+  e1:
+    num: ${...domain_to_e1_num.${hydra:runtime.choices.domain}}
+
+pass_result_archive_to_emitters: true
+
+defaults:
+  - e1_num
+  - archive: discount
+  - discount_model: mlp
+  - result_archive: grid_100
+  - scheduler: scheduler
+  - emitters@_emitter_dict.e1.type: es_imp
+  - _self_

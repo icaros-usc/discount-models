@@ -1,0 +1,24 @@
+defaults:
+  - extra_fields # See extra_fields.yaml
+  - _self_
+
+domain_params:
+  learning_rate:
+    sphere_multi_100d: 0.01
+    sphere_20_100d: 0.01
+    sphere_50_100d: 0.01
+    rastrigin_multi_100d: 0.01
+    flat_multi_100d: 0.01
+
+args:
+  _target_: ribs.archives.CVTArchive
+  centroids: "src/cvt/centroids/flat_multi_100d.npy"
+  solution_dim: ${domain.config.solution_dim}
+  ranges: "${eval:'list(zip(${domain.config.measure_low},${domain.config.measure_high}))'}"
+  nearest_neighbors: "scipy_kd_tree"
+  kdtree_query_kwargs:
+    workers: 8
+  dtype: "${get_cls: numpy.float32}"
+  threshold_min: ${domain.config.obj_low}
+  learning_rate: ${..domain_params.learning_rate.${hydra:runtime.choices.domain}}
+  extra_fields: ${eval:"dict.get(${..domain_to_extra_fields},'${hydra:runtime.choices.domain}')"}

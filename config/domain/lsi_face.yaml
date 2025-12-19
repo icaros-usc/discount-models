@@ -1,0 +1,18 @@
+_target_: src.domains.lsi_face.LSIFace
+config:
+  clip_model_name: "ViT-B/32"
+  # solution_dim: 512 # Latent space dim.
+  solution_dim: 8192 # W+ space dim.
+  stylegan_filename: "./stylegan3-t-ffhqu-256x256.pkl"
+  # solution_dim: 7168 # W+ space dim.
+  # stylegan_filename: "./stylegan2-ffhq-256x256.pkl"
+  obj_low: 0.0
+  obj_high: 1.0
+  # obj_prompt: "A photo of the face of Tom Cruise."
+  obj_prompt: "A photo of someone wearing a hat."
+  measure_low: ${eval:'[-1.0] * ${.measure_dim}'}
+  measure_high: ${eval:'[1.0] * ${.measure_dim}'}
+  measure_dim: 512 # CLIP dimensionality for ViT-B/32
+  space: "w_plus"
+  add_centroid_dist: True
+  centroids: "src/cvt/centroids/lhq_clip_embeddings_10k.npy"

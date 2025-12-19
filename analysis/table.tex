@@ -1,0 +1,23 @@
+\documentclass[11pt]{article}
+\usepackage[paperwidth=40in, margin=0.5in]{geometry}
+
+
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{adjustbox}
+\usepackage{array}
+\usepackage{multirow}
+
+\newcolumntype{X}[2]{%
+    >{\adjustbox{angle=#1,lap=\width-(#2)}\bgroup}%
+    r%
+    <{\egroup}%
+}
+\newcommand*\rot{\multicolumn{1}{X{90}{1em}}}
+
+\begin{document}
+
+\input{./results_single_table.tex}
+
+\end{document}

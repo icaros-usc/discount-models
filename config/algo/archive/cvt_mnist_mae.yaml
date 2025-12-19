@@ -1,0 +1,13 @@
+defaults:
+  - cvt_mnist
+  - extra_fields # See extra_fields.yaml
+  - _self_
+
+domain_params:
+  learning_rate:
+    triangles_mnist: 0.001
+    triangles_fashion_mnist: 0.1
+
+args:
+  threshold_min: ${domain.config.obj_low}
+  learning_rate: ${..domain_params.learning_rate.${hydra:runtime.choices.domain}}

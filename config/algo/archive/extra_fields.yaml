@@ -1,0 +1,17 @@
+domain_to_extra_fields:
+  mnist_bold_light:
+    # If we use get_cls, we get UnsupportedValueType errors -- see here:
+    # - https://github.com/omry/omegaconf/issues/392#issuecomment-948956968
+    # - https://github.com/facebookresearch/hydra/issues/1865
+    # Thus, we have to use float to specify the dtype, which is fine as numpy
+    # supports string dtypes.
+    # img: [[1, 28, 28], "${get_cls: numpy.float32}"]
+    mnist_img: [[1, 28, 28], "float32"]
+  mnist_bold_light_mlp:
+    mnist_img: [[1, 28, 28], "float32"]
+  mnist_bold_light_ae:
+    mnist_img: [[1, 28, 28], "float32"]
+  mnist_bold_light_vae:
+    mnist_img: [[1, 28, 28], "float32"]
+  mnist_digits_06:
+    mnist_img: [[1, 28, 28], "float32"]

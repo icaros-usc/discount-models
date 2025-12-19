@@ -1,0 +1,29 @@
+_target_: src.domains.triangles.Triangles
+config:
+  solution_dim: ${eval:'${.n_triangle} * 8'} # 10 if using rgba, 8 if using grayscale
+  measure_low: ${eval:'[0.0] * ${.measure_dim}'}
+  measure_high: ${eval:'[1.0] * ${.measure_dim}'}
+  measure_dim: 784
+  objective: "centroid_mse"
+  centroids: "src/cvt/centroids/mnist_1000_centroids.npy"
+  obj_low: 0.0
+  obj_high: 1.0
+  mode: "grayscale" # "rgba", "grayscale"
+  h: 28
+  w: 28
+  # Note: ES-CLIP paper mentions 0.1 and uses 0.1 as default in the
+  # TrianglesPainter class, but in the es_clip script and EvoJAX notebook it
+  # defaults to 0.5.
+  alpha_scale: 0.5
+  n_triangle: 30
+  background: "black"
+  # This fills the background with noise uniformly sampled in [0, 1]. This is
+  # not very useful for MNIST because MNIST images have black backgrounds.
+  # background: "noise"
+  # **quant** specifies the quantization of RGBA values after painting each
+  # triangle. If 0, no quantization is conducted.
+  quant: 0
+  # Number of times to generate the image. This is mostly applicable if using a
+  # noisy background.
+  rollouts: 1
+  clip_embed: false
