@@ -187,3 +187,17 @@ the format of this manifest.
 Follow the instructions in `analysis/README.md` for generating plots with the
 given manifest. Note that the analysis code uses different dependencies from the
 main repo.
+
+## Citation
+
+```bibtex
+@misc{tjanaka2026discountmodelsearchquality,
+      title={Discount Model Search for Quality Diversity Optimization in High-Dimensional Measure Spaces},
+      author={Bryon Tjanaka and Henry Chen and Matthew C. Fontaine and Stefanos Nikolaidis},
+      year={2026},
+      eprint={2601.01082},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2601.01082},
+}
+```
