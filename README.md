@@ -1,7 +1,8 @@
 # Discount Model Search for Quality Diversity Optimization in High-Dimensional Measure Spaces
 
-This repository is the implementation of Discount Model Search for Quality
-Diversity Optimization in High-Dimensional Measure Spaces.
+This repository is the implementation of
+[Discount Model Search for Quality Diversity Optimization in High-Dimensional Measure Spaces](https://arxiv.org/abs/2601.01082)
+by Bryon Tjanaka, Henry Chen, Matthew C. Fontaine, and Stefanos Nikolaidis.
 
 ## Installation
 
