@@ -2,7 +2,9 @@
 
 This repository is the implementation of
 [Discount Model Search for Quality Diversity Optimization in High-Dimensional Measure Spaces](https://arxiv.org/abs/2601.01082)
-by Bryon Tjanaka, Henry Chen, Matthew C. Fontaine, and Stefanos Nikolaidis.
+by Bryon Tjanaka, Henry Chen, Matthew C. Fontaine, and Stefanos Nikolaidis,
+[published at ICLR 2026](https://openreview.net/forum?id=m6Hv0yZO3n) as an Oral
+presentation.
 
 ## Installation
 
@@ -32,9 +34,10 @@ lhq_256_root
 ### Generating Centroids
 
 We have already generated centroids and stored them in this repo under
-`src/cvt/centroids/`. However, new centroids can be generated as follows. Place
-any generated files under `src/cvt/centroids/`, or modify the `centroids` path
-in the configs in `config/algo/archive/`.
+`src/cvt/centroids/`. However, new centroids can be generated as shown below.
+Place the generated files from the below commands under `src/cvt/centroids/`, or
+modify the `centroids` path in the configs in `config/algo/archive/` to point to
+the new files.
 
 1. 10D, 20D, and 50D LP domains:
 
@@ -191,13 +194,12 @@ main repo.
 ## Citation
 
 ```bibtex
-@misc{tjanaka2026discountmodelsearchquality,
-      title={Discount Model Search for Quality Diversity Optimization in High-Dimensional Measure Spaces},
-      author={Bryon Tjanaka and Henry Chen and Matthew C. Fontaine and Stefanos Nikolaidis},
-      year={2026},
-      eprint={2601.01082},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2601.01082},
+@inproceedings{
+  tjanaka2026discount,
+  title={Discount Model Search for Quality Diversity Optimization in High-Dimensional Measure Spaces},
+  author={Bryon Tjanaka and Henry Chen and Matthew C. Fontaine and Stefanos Nikolaidis},
+  booktitle={The Fourteenth International Conference on Learning Representations},
+  year={2026},
+  url={https://openreview.net/forum?id=m6Hv0yZO3n}
 }
 ```
