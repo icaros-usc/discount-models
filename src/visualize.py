@@ -65,12 +65,12 @@ def visualize_single(solution, link_lengths, objectives, ax, context):
 
 def visualize_discount_points(discount_train_info, discount_archive, ax, domain_cfg):
     if discount_train_info is None:
-        new_measures = np.empty((0, 2))
+        solution_measures = np.empty((0, 2))
         empty_measures = np.empty((0, 2))
         non_empty_measures = np.empty((0, 2))
         same_measures = np.empty((0, 2))
     else:
-        new_measures = discount_train_info["new_measures"]
+        solution_measures = discount_train_info["solution_measures"]
         empty_measures = discount_train_info["empty_measures"]
         non_empty_measures = discount_train_info["non_empty_measures"]
         same_measures = discount_train_info["same_measures"]
@@ -78,8 +78,8 @@ def visualize_discount_points(discount_train_info, discount_archive, ax, domain_
     plot_discount_archive(discount_archive, ax, domain_cfg)
 
     ax.scatter(
-        new_measures[:, 0],
-        new_measures[:, 1],
+        solution_measures[:, 0],
+        solution_measures[:, 1],
         s=50,
         c="cornflowerblue",
         marker=".",
@@ -121,17 +121,17 @@ def visualize_discount_points(discount_train_info, discount_archive, ax, domain_
 def visualize_discount_points_2(discount_train_info, discount_archive, ax, domain_cfg):
     """Unlike above, does not plot non-empty or same points."""
     if discount_train_info is None:
-        new_measures = np.empty((0, 2))
+        solution_measures = np.empty((0, 2))
         empty_measures = np.empty((0, 2))
     else:
-        new_measures = discount_train_info["new_measures"]
+        solution_measures = discount_train_info["solution_measures"]
         empty_measures = discount_train_info["empty_measures"]
 
     plot_discount_archive(discount_archive, ax, domain_cfg)
 
     ax.scatter(
-        new_measures[:, 0],
-        new_measures[:, 1],
+        solution_measures[:, 0],
+        solution_measures[:, 1],
         s=10,
         c="cornflowerblue",
         marker=".",

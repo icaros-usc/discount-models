@@ -26,7 +26,7 @@ from src.utils.metric_logger import MetricLogger
 from src.visualize import visualize_discount_points_2
 
 # Use when debugging warnings.
-#  import src.utils.warn_traceback  # pylint: disable = unused-import
+#  import src.utils.warn_traceback
 
 log = logging.getLogger(__name__)
 
@@ -50,18 +50,23 @@ def build_qd_algo(
 
     if cfg.algo.get("discount_model"):
         # Create discount archive with discount model.
-        discount_model = hydra.utils.instantiate(
-            cfg.algo.discount_model,
-            seed=None if cfg.seed is None else cfg.seed + 420,
+        model = hydra.utils.instantiate(cfg.algo.discount_model.model)
+        model.to(device)
+        optimizer = hydra.utils.instantiate(
+            cfg.algo.discount_model.optimizer,
+            params=model.parameters(),
+        )
+        discount_model_manager = hydra.utils.instantiate(
+            cfg.algo.discount_model.manager,
+            model=model,
+            optimizer=optimizer,
             device=device,
-            _recursive_=False,
         )
         archive = hydra.utils.instantiate(
             cfg.algo.archive.args,
-            seed=cfg.seed,
-            discount_model=discount_model,
-            device=device,
+            discount_model_manager=discount_model_manager,
             result_archive=result_archive,
+            seed=cfg.seed,
         )
     else:
         # Create regular archive.
@@ -156,7 +161,7 @@ def make_plots_full(
 
         if cfg.algo.get("discount_model"):
             discount_archive = make_discount_archive(
-                scheduler.archive.discount_model, cfg
+                scheduler.archive.discount_model_manager, cfg
             )
             plot_discount_archive(discount_archive, axs[1], domain_module.config)
             visualize_discount_points_2(
@@ -359,7 +364,7 @@ def main(cfg: DictConfig) -> None:
             timer.start("Discount Model Training")
             if (
                 cfg.algo.get("discount_model")
-                and itr % scheduler.archive.train_freq == 0
+                and itr % cfg.algo.discount_model.train_freq == 0
             ):
                 discount_train_info = scheduler.archive.train_discount_model()
             else:
@@ -406,7 +411,7 @@ def main(cfg: DictConfig) -> None:
                 metrics_dict.update(
                     {
                         "Final Discount Loss": discount_train_info["losses"][-1],
-                        "Num Empty": discount_train_info["n_empty"],
+                        "Num Empty": len(discount_train_info["empty_measures"]),
                         "Discount Epochs": discount_train_info["epochs"],
                     }
                 )

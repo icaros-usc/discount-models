@@ -9,7 +9,7 @@ from omegaconf import DictConfig
 from ribs.archives import ArchiveBase, CVTArchive, GridArchive
 from ribs.visualize import grid_archive_heatmap
 
-from src.models.discount_model_base import DiscountModelBase
+from src.discount_models import DiscountModelManager
 
 log = logging.getLogger(__name__)
 
@@ -32,12 +32,12 @@ def compute_centers(archive: GridArchive | CVTArchive) -> np.ndarray:
 
 
 def make_discount_archive(
-    discount_model: DiscountModelBase, cfg: DictConfig
+    discount_model_manager: DiscountModelManager, cfg: DictConfig
 ) -> ArchiveBase:
     """Creates an archive that stores the value of the discount model at each cell.
 
     Args:
-        discount_model: The model to plot.
+        discount_model_manager: Contains the discount model to plot.
         cfg: Base discount config.
 
     Returns:
@@ -51,7 +51,7 @@ def make_discount_archive(
     )
 
     measure_coords = compute_centers(discount_archive)
-    discounts = discount_model.chunked_inference(measure_coords).detach().cpu().numpy()
+    discounts = discount_model_manager.inference(measure_coords)
     discount_archive.add(
         np.empty((len(measure_coords), 0)),
         discounts,

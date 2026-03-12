@@ -1,9 +1,15 @@
-"""Contains the DiscountArchive."""
+"""Contains the DiscountArchive.
 
-import logging
+Note that the reference implementation of Discount Model Search now lives in the pyribs
+library: https://pyribs.org/
+However, to enable easy experimentation in this repo, this file has been copied in from
+the pyribs repo. Its original location is:
+https://github.com/icaros-usc/pyribs/blob/master/ribs/archives/_discount_archive.py
+"""
+
+from __future__ import annotations
 
 import numpy as np
-import torch
 from numpy.typing import ArrayLike, DTypeLike
 from ribs._utils import validate_batch
 from ribs.archives._archive_base import ArchiveBase
@@ -12,39 +18,77 @@ from ribs.archives._grid_archive import GridArchive
 from ribs.archives._utils import parse_all_dtypes
 from ribs.typing import BatchData, Float, Int
 
-from src.models.discount_model_base import DiscountModelBase
-
-log = logging.getLogger(__name__)
+from src.discount_models import DiscountModelManager
 
 _RESULT_ARCHIVE_ERROR = "result_archive must be a GridArchive or CVTArchive."
+
+
+# Developer Note: The documentation for this class is hacked. To list new methods,
+# manually modify the template in docs/_templates/autosummary/class.rst
 
 
 class DiscountArchive(ArchiveBase):
     """Archive that represents the discount function with a model.
 
-    The discount model maps from measures to discount values.
+    This archive originates in the Discount Model Search algorithm in `Tjanaka 2026
+    <https://discount-models.github.io/>`_ and is based around a discount model, i.e., a
+    model that maps from measures to discount values. In short, the discount model
+    serves as a smooth representation of the discount function, compared to the
+    histogram representation in CMA-MAE.
 
-    This archive provides several configuration parameters related to the discount
-    model. These parameters focus on how the *training data* is specified for the
-    discount model, whereas the discount model itself handles the process of training on
-    that data. Overall, we assume this archive can produce training data, and the
-    discount model can successfully regress to this data.
+    To elaborate, CMA-MAE computes improvement values using a "soft archive" that stores
+    a discount value in each cell -- the soft archive is essentially a histogram of
+    discount values. In contrast, this archive computes improvement values using a
+    discount model, which provides a smooth representation of the discount function. As
+    Discount Model Search proceeds, the discount model is trained using data from two
+    sources. First is solutions sampled by the emitters, and second is "empty points",
+    i.e., measure space points sampled at the centers of unoccupied cells in the
+    ``result_archive``. The emitter solutions represent where the search is progressing,
+    while the empty points force the discount model to maintain low values in areas of
+    the archive that have not been explored yet.
+
+    From an implementation perspective, this archive focuses on providing the correct
+    *training data* to the discount model. This data consists of pairs of measure values
+    and discount value targets. Meanwhile, a
+    :class:`~ribs.discount_models.DiscountModelManager` handles the process of training
+    on that data and performing inference. As such, this archive includes configuration
+    parameters like ``threshold_min`` and ``empty_points``, while
+    :class:`~ribs.discount_models.DiscountModelManager` takes in the discount model's
+    neural network itself. Overall, we assume this archive can produce training data,
+    and the discount model manager can successfully regress the discount model to that
+    data.
+
+    .. note::
+
+        The usage for this archive is similar to other archives like
+        :class:`~ribs.archives.GridArchive` in that it is initialized, passed to the
+        scheduler, and then has solutions added to it. However, it differs in that users
+        must also call the training functions :meth:`init_discount_model` (before
+        starting the main loop of their algorithm) and :meth:`train_discount_model`
+        (during the main loop of their algorithm, *after* calling
+        :meth:`~ribs.schedulers.Scheduler.tell`).
+
+        We adopt this API because the training methods can be computationally intensive.
+        Allowing the user to call the methods themselves enables them to control exactly
+        when the training happens; furthermore, they can collect information like
+        training statistics. Otherwise, the discount model training would be placed in
+        ``__init__()`` and ``add()``, potentially causing those methods to take a long
+        time.
 
     Args:
-        solution_dim: Dimensionality of solutions.
-        measure_dim: Dimensionality of the measures.
+        solution_dim: Dimensionality of the solution space.
+        measure_dim: Dimensionality of the measure space.
         learning_rate: The learning rate for discount updates.
         threshold_min: Minimum discount value. Used when initializing the discount model
-            and when regressing to "empty points."
-        discount_model: Model of the discount function.
-        device: PyTorch device where the discount model is located.
+            and when regressing to empty points.
+        discount_model_manager: An object that handles training and inference for the
+            discount model. The archive accesses the discount model through this
+            manager.
         result_archive: The archive storing results for the algorithm. This is used for
             sampling empty points. Currently, only GridArchive and CVTArchive are
             supported.
-        initial_train_points: Number of points to use for initializing the discount
-            model.
-        empty_points: Number of empty points to sample.
-        train_freq: How often (in terms of iterations) to train the discount model.
+        init_train_points: Number of points to use for initializing the discount model.
+        empty_points: Number of empty points to sample when training the discount model.
         seed: Value to seed the random number generator. Set to None to avoid a fixed
             seed.
         solution_dtype: Data type of the solutions. Defaults to float64 (numpy's default
@@ -65,16 +109,15 @@ class DiscountArchive(ArchiveBase):
 
     def __init__(
         self,
+        *,
         solution_dim: Int | tuple[Int, ...],
         measure_dim: Int,
         learning_rate: Float,
         threshold_min: Float,
-        discount_model: DiscountModelBase,
-        device: torch.device,
+        discount_model_manager: DiscountModelManager,
         result_archive: GridArchive | CVTArchive,
-        initial_train_points: Int,
+        init_train_points: Int,
         empty_points: Int,
-        train_freq: Int,
         seed: Int | None = None,
         solution_dtype: DTypeLike = None,
         objective_dtype: DTypeLike = None,
@@ -103,16 +146,16 @@ class DiscountArchive(ArchiveBase):
         self._learning_rate = np.asarray(learning_rate, dtype=self.dtypes["measures"])
         self._threshold_min = np.asarray(threshold_min, dtype=self.dtypes["measures"])
 
-        self._discount_model = discount_model
-        self._device = device
+        self._discount_model_manager = discount_model_manager
         self._result_archive = result_archive
         if not isinstance(result_archive, (GridArchive, CVTArchive)):
             raise ValueError(_RESULT_ARCHIVE_ERROR)
 
-        self._initial_train_points = initial_train_points
+        self._init_train_points = init_train_points
         self._empty_points = empty_points
-        self._train_freq = train_freq
 
+        # The data and add_info are cached during add() so that they can be used in
+        # train_discount_model().
         self._cached_data = None
         self._cached_add_info = None
 
@@ -144,36 +187,21 @@ class DiscountArchive(ArchiveBase):
         return self._threshold_min
 
     @property
-    def discount_model(self) -> DiscountModelBase:
-        """The discount model managed by this archive."""
-        return self._discount_model
+    def discount_model_manager(self) -> DiscountModelManager:
+        """The discount model manager for this archive."""
+        return self._discount_model_manager
 
     @property
-    def device(self) -> torch.device:
-        """PyTorch device where the discount model is located."""
-        return self._device
-
-    @property
-    def initial_train_points(self) -> Int:
+    def init_train_points(self) -> Int:
         """Number of points to use for initializing the discount model."""
-        return self._initial_train_points
+        return self._init_train_points
 
     @property
     def empty_points(self) -> Int:
         """Number of empty points to sample."""
         return self._empty_points
 
-    @property
-    def train_freq(self) -> Int:
-        """How often (in terms of iterations) to train the discount model."""
-        return self._train_freq
-
     ## Training ##
-    # We make the training methods public because they tend to be pretty intensive, so
-    # it is helpful to call them in the main loop rather than only in the archive. This
-    # way, the user gets exact control of when the training happens and can also look at
-    # info like training statistics. Otherwise, __init__() and add() may take a while
-    # since we would be training the discount model in those methods.
 
     def _sample_empty_archive_centers(self, n: int) -> np.ndarray:
         """Samples random cells in the result archive and returns their centers.
@@ -183,12 +211,12 @@ class DiscountArchive(ArchiveBase):
 
         Args:
             n: Number of centers to sample. Note that the actual number of empty cells
-                in the archive may be less than n, in which case fewer than n points
+                in the archive may be fewer than n, in which case fewer than n points
                 will be returned.
         """
         if isinstance(self._result_archive, GridArchive):
             empty_indices = np.arange(self._result_archive.cells)[
-                ~self._result_archive._store.occupied
+                ~self._result_archive._store.occupied  # pylint: disable = protected-access
             ]
             empty_indices = self._rng.choice(
                 empty_indices,
@@ -207,7 +235,7 @@ class DiscountArchive(ArchiveBase):
             # Sample empty indices in the CVT archive to determine where
             # the threshold should be held at discount_min.
             empty_indices = np.arange(self._result_archive.cells)[
-                ~self._result_archive._store.occupied
+                ~self._result_archive._store.occupied  # pylint: disable = protected-access
             ]
             empty_indices = self._rng.choice(
                 empty_indices,
@@ -221,95 +249,90 @@ class DiscountArchive(ArchiveBase):
             raise ValueError(_RESULT_ARCHIVE_ERROR)
 
     def init_discount_model(self) -> dict:
-        """Initializes the discount model so that it (roughly) outputs threshold_min everywhere.
+        """Initializes the discount model so that it outputs threshold_min everywhere.
+
+        To obtain measure values, this method samples :attr:`init_train_points` centers
+        from the result archive. The discount value target for each measure is set to
+        :attr:`threshold_min`. Finally,
+        :meth:`ribs.discount_models.DiscountModelManager.training_loop` is called to
+        train the discount model with this data.
 
         Returns:
-            Dict with info from training.
+            Info from training. See :meth:`train_discount_model` for info on this dict.
+            The format is identical, but note that "solution_measures" and
+            "solution_targets" are arrays of length 0.
         """
-        empty_measures = self._sample_empty_archive_centers(self.initial_train_points)
+        empty_measures = self._sample_empty_archive_centers(self.init_train_points)
+        empty_targets = np.full(len(empty_measures), self.threshold_min)
 
-        train_measures = torch.tensor(
-            empty_measures,
-            dtype=torch.float32,
-            device=self._device,
+        losses = self.discount_model_manager.training_loop(
+            empty_measures, empty_targets
         )
-        train_targets = torch.full(
-            (len(train_measures),),
-            float(self.threshold_min),
-            dtype=torch.float32,
-            device=self._device,
-        )
-
-        losses = self.discount_model.training_loop(train_measures, train_targets)
 
         return {
-            # Number of points marked empty.
-            "n_empty": len(empty_measures),
-            # New measures from the emitters.
-            "new_measures": np.empty((0, self.measure_dim)),
-            # Measures that were marked as empty.
+            "solution_measures": np.empty((0, self.measure_dim)),
+            "solution_targets": np.empty((0,)),
             "empty_measures": empty_measures,
-            # Training losses.
-            "losses": losses,
-            # Training epochs.
             "epochs": len(losses),
+            "losses": losses,
         }
 
     def train_discount_model(self) -> dict:
-        """Trains the discount model based on information from evaluations.
+        """Trains the discount model.
 
-        Some of the data for training is cached when calling :meth:`add` and retrieved
-        in this method.
+        The training process is described in Section 5 of `Tjanaka 2026
+        <https://discount-models.github.io/>`_. The first data source for training the
+        discount model comes from solutions sampled by the emitters -- this data is
+        cached in the archive during a prior call to :meth:`add`, which happens inside
+        the scheduler's :meth:`~ribs.schedulers.Scheduler.tell` method. The second data
+        source, "empty points", are sampled from the centers of unoccupied cells in the
+        result archive. The number of empty points is controlled by the
+        :attr:`empty_points` property.
 
         Returns:
-            Dict with info from training.
+            Info from training. The dict contains the following keys:
+
+            - "solution_measures": Measures associated with solutions sampled by the
+              emitters, i.e., measures that were previously passed into :meth:`add`.
+            - "solution_targets": Array of target discount values for the aforementioned
+              "solution_measures". Note that the target for empty points is always
+              :attr:`threshold_min`, so we do not include an "empty_targets" key.
+            - "empty_measures": Array of empty points sampled from the result archive.
+              Note that the number of points may be fewer than :attr:`empty_points` if
+              the result archive did not have enough unoccupied cells.
+            - "epochs": Number of epochs for which the discount model was trained.
+            - "losses": List with loss from each epoch of training the discount model.
         """
         data = self._cached_data
         add_info = self._cached_add_info
 
         empty_measures = self._sample_empty_archive_centers(self.empty_points)
-        n_empty = len(empty_measures)
 
-        measure_list = [
-            data["measures"],
-            empty_measures,
-        ]
-        target_list = [
-            # Measures from the data result in the threshold update rule.
-            np.where(
-                data["objective"] > add_info["discount"],
-                (1.0 - self.learning_rate) * add_info["discount"]
-                + self.learning_rate * data["objective"],
-                add_info["discount"],
-            ),
-            # Empty measures get threshold_min.
-            np.full(len(empty_measures), self.threshold_min),
-        ]
-
-        train_measures = torch.tensor(
-            np.concatenate(measure_list),
-            dtype=torch.float32,
-            device=self.device,
-        )
-        train_targets = torch.tensor(
-            np.concatenate(target_list),
-            dtype=torch.float32,
-            device=self.device,
+        # Measures from the solutions result in the threshold update rule adapted from
+        # CMA-MAE (Equation 1 in Tjanaka 2026).
+        solution_targets = np.where(
+            data["objective"] > add_info["discount"],
+            (1.0 - self.learning_rate) * add_info["discount"]
+            + self.learning_rate * data["objective"],
+            add_info["discount"],
         )
 
-        losses = self.discount_model.training_loop(train_measures, train_targets)
+        # Empty measures get threshold_min.
+        empty_targets = np.full(len(empty_measures), self.threshold_min)
+
+        train_measures = np.concatenate((data["measures"], empty_measures))
+        train_targets = np.concatenate((solution_targets, empty_targets))
+
+        losses = self.discount_model_manager.training_loop(
+            train_measures, train_targets
+        )
 
         return {
-            # Number of points marked empty.
-            "n_empty": n_empty,
-            # New measures from the emitters.
-            "new_measures": data["measures"],
-            # Measures that were marked as empty.
+            "solution_measures": data["measures"],
+            "solution_targets": solution_targets,
             "empty_measures": empty_measures,
-            # Training losses.
-            "losses": losses,
-            # Training epochs.
             "epochs": len(losses),
+            "losses": losses,
         }
 
     ## Methods for writing to the archive ##
@@ -372,15 +395,13 @@ class DiscountArchive(ArchiveBase):
             },
         )
 
-        discount = (
-            self.discount_model.chunked_inference(data["measures"])
-            .detach()
-            .cpu()
-            .numpy()
-        )
+        discount = self.discount_model_manager.inference(data["measures"])
+
+        # Cast so that we can remain faithful to the archive's dtypes.
+        discount = discount.astype(self.dtypes["objective"])
 
         added = data["objective"] > discount
-        status = 2 * added
+        status = (2 * added).astype(np.int32)
         value = data["objective"] - discount
         add_info = {"status": status, "value": value, "discount": discount}
         self._cached_data = data

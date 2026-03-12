@@ -1,34 +1,33 @@
-_target_: src.models.mlp.MLPDiscountModel
+model:
+  _target_: src.discount_models.MLP
+  layer_specs:
+    ${eval:'[[${domain.config.measure_dim}, 128], [128, 128], [128, 1]]'}
+  activation: "${get_cls: torch.nn.ReLU}"
 
-cfg:
-  model:
-    args:
-      _target_: src.models.mlp.MLP
-      layer_specs:
-        ${eval:'[[${domain.config.measure_dim}, 128], [128, 128], [128, 1]]'}
-      activation: "${get_cls: torch.nn.ReLU}"
-      # Inputs to the discount model's network are normalized based on the
-      # bounds of the measure space.
-      normalize: "negative_one_one" # "negative_one_one", "zero_one", False
-      norm_low: ${domain.config.measure_low}
-      norm_high: ${domain.config.measure_high}
+optimizer:
+  _target_: torch.optim.Adam
+  lr: 0.001
+  betas: [0.9, 0.999]
 
-  init:
-    weights:
-      func: pytorch_default
+manager:
+  _target_: src.discount_models.DiscountModelManager
+  # Trains for at most the given epochs. If we achieve the given cutoff_loss, we
+  # stop immediately. The loss is the MSE between the targets and the output of
+  # the discount function. To always train for a specific number of epochs, set
+  # cutoff_loss to 0.
+  train_epochs: 5
+  train_cutoff_loss:
+    ${eval:'0.05 * (${domain.config.obj_high} - ${domain.config.obj_low})'}
+  train_batch_size: 32
+  # Inputs to the discount model's network are normalized based on the
+  # bounds of the measure space.
+  normalize_measures: "negative_one_one" # "negative_one_one", "zero_one", False
+  measures_low: ${domain.config.measure_low}
+  measures_high: ${domain.config.measure_high}
+  normalize_discount: "zero_one"
+  discount_low: ${domain.config.obj_low}
+  discount_high: ${domain.config.obj_high}
 
-  optimizer:
-    args:
-      _target_: torch.optim.Adam
-      lr: 0.001
-      betas: [0.9, 0.999]
-
-  train:
-    # Trains for at most the given epochs. If we achieve the given cutoff_loss,
-    # we stop immediately. The loss is the MSE between the targets and the
-    # output of the discount function. To always train for a specific number of
-    # epochs, set cutoff_loss to 0.
-    epochs: 5
-    cutoff_loss:
-      ${eval:'0.05 * (${domain.config.obj_high} - ${domain.config.obj_low})'}
-    batch_size: 32
+# How often (in terms of iterations) to train the discount model. 1 indicates
+# training on every iteration.
+train_freq: 1

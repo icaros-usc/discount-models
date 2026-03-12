@@ -45,6 +45,6 @@ TQDM_DISABLE=1 uv run -m src.qd --multirun \
   algo=dms \
   algo/archive=discount \
   algo/result_archive=grid_100 \
-  itrs=1 \
+  itrs=10000 \
   $EXTRA_ARGS \
   seed=$(uv run scripts/seeds.py 20)

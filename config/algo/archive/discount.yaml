@@ -28,7 +28,6 @@ args:
   measure_dim: ${domain.config.measure_dim}
   learning_rate: ${..domain_params.learning_rate.${hydra:runtime.choices.domain}}
   threshold_min: ${domain.config.obj_low}
-  initial_train_points: 1000
+  init_train_points: 1000
   empty_points: 100
-  train_freq: 1 # Train on every iteration.
   dtype: "${get_cls: numpy.float32}"
