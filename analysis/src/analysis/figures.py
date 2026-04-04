@@ -413,6 +413,26 @@ PLOT_INFO = {
         "ylim": [0, 1.0],
         "yticks": [0, 0.5, 1.0],
     },
+    ("QD Score", "20D LP (Sphere)"): {
+        "xlim": [0, 10000],
+        "ylim": [0, 8000],
+        "yticks": [0, 4000, 8000],
+    },
+    ("Coverage", "20D LP (Sphere)"): {
+        "xlim": [0, 10000],
+        "ylim": [0, 1.0],
+        "yticks": [0, 0.5, 1.0],
+    },
+    ("QD Score", "50D LP (Sphere)"): {
+        "xlim": [0, 10000],
+        "ylim": [0, 8000],
+        "yticks": [0, 4000, 8000],
+    },
+    ("Coverage", "50D LP (Sphere)"): {
+        "xlim": [0, 10000],
+        "ylim": [0, 1.0],
+        "yticks": [0, 0.5, 1.0],
+    },
     ("QD Score", "2D LP (Rastrigin)"): {
         "xlim": [0, 10000],
         "ylim": [0, 8000],
@@ -642,15 +662,14 @@ def comparison(
         figure_data: Path to JSON file with figure data.
         outputs: Output directory for saving the figures.
         palette: Either a Seaborn color palette, "qualitative_colors" for
-            QUALITATIVE_COLORS, or "colorblind_reordered" for
-            COLORBLIND_REORDERED.
+            QUALITATIVE_COLORS, or "colorblind_reordered" for COLORBLIND_REORDERED.
         height: Height in inches of each plot.
         plot_every: How frequently to plot points, e.g. plot every 100th point.
         sans: Pass this in to use Sans Serif fonts.
-        iteration: Pass this to cut off the plots at some iteration. Defaults to
-            the last iteration.
-        groups: List of list of environments for grouping the results (so that
-            they are plotted in separate documents).
+        iteration: Pass this to cut off the plots at some iteration. Defaults to the
+            last iteration.
+        groups: List of list of environments for grouping the results (so that they are
+            plotted in separate documents).
     """
     logger.info("Creating output directory")
     output = Path(output)
@@ -1048,8 +1067,8 @@ def single_table(
     Args:
         figure_data: Path to JSON file with figure data.
         output: Path to save Latex table.
-        iteration: The iteration at which to take the metrics (for series
-            metrics). Defaults to the last iteration.
+        iteration: The iteration at which to take the metrics (for series metrics).
+            Defaults to the last iteration.
     """
     figure_data = load_figure_data(figure_data)
 
@@ -1938,8 +1957,7 @@ def ablation_plot(
         figure_data: Path to JSON file with figure data.
         outputs: Output directory for saving the figures.
         palette: Either a Seaborn color palette, "qualitative_colors" for
-            QUALITATIVE_COLORS, or "colorblind_reordered" for
-            COLORBLIND_REORDERED.
+            QUALITATIVE_COLORS, or "colorblind_reordered" for COLORBLIND_REORDERED.
         height: Height in inches of each plot.
         plot_every: How frequently to plot points, e.g. plot every 100th point.
         sans: Pass this in to use Sans Serif fonts.
