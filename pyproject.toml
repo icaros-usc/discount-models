@@ -25,7 +25,7 @@ dependencies = [
     "python-slugify>=8.0.4",
     "pyyaml>=6.0.3",
     "requests>=2.32.5",
-    "ribs[all]==0.9.0",
+    "ribs[all]==0.10.0",
     "ruamel-yaml>=0.18.16",
     "seaborn>=0.13.2",
     "statsmodels>=0.14.6",

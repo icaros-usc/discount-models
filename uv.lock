@@ -514,7 +514,7 @@ requires-dist = [
     { name = "python-slugify", specifier = ">=8.0.4" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "requests", specifier = ">=2.32.5" },
-    { name = "ribs", extras = ["all"], specifier = "==0.9.0" },
+    { name = "ribs", extras = ["all"], specifier = "==0.10.0" },
     { name = "ruamel-yaml", specifier = ">=0.18.16" },
     { name = "seaborn", specifier = ">=0.13.2" },
     { name = "statsmodels", specifier = ">=0.14.6" },
@@ -2263,7 +2263,7 @@ wheels = [
 
 [[package]]
 name = "ribs"
-version = "0.9.0"
+version = "0.10.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "array-api-compat" },
@@ -2277,9 +2277,9 @@ dependencies = [
     { name = "threadpoolctl" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/57/54/e0b4f662cbda4d50879810dc9ca5d51f558f747b8445d63420a0729f9379/ribs-0.9.0.tar.gz", hash = "sha256:fcca800f72309877e8d46f490729f7522dc61b6a158d81ecf969af9134766c87", size = 181012, upload-time = "2025-12-18T12:07:14.962Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5d/ea/12554600812a91a7bcd35246f17343842671d2a0522927268d66ed73833b/ribs-0.10.0.tar.gz", hash = "sha256:f0cb51d3cb7c5aac6a3228b7915dc7b8657fb192a1a0a8baf48c7348acbb498c", size = 192608, upload-time = "2026-04-08T00:38:36.275Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/18/89/eab1381a9bbfc7e03188a15e55a3934448fc1aae1ac8f70a6a92091cb23a/ribs-0.9.0-py3-none-any.whl", hash = "sha256:3bbb1ac127eeaea4ba6201b1b6fd396af30a53794ff1fc1c43394d9570b394f9", size = 197943, upload-time = "2025-12-18T12:07:13.484Z" },
+    { url = "https://files.pythonhosted.org/packages/0d/09/9d44568014ca7f017a35a33c065182c447f87aa822c8b4d3f58026642167/ribs-0.10.0-py3-none-any.whl", hash = "sha256:227c70ddd609c5848c02662a49b6704bee067564f0a02bf1b67e04b8830e4d78", size = 213339, upload-time = "2026-04-08T00:38:34.97Z" },
 ]
 
 [package.optional-dependencies]
