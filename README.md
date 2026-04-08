@@ -8,13 +8,14 @@ presentation.
 
 > [!NOTE]
 >
-> The reference implementation of Discount Model Search now lives in the
-> [pyribs](https://pyribs.org) library! The components for implementing DMS in
-> this repository are copies of
+> The reference implementation of the Discount Model Search algorithm lives in
+> the [pyribs](https://pyribs.org) library! This repository contains
+> implementations of all the experiments in our paper. As such, the components
+> for implementing DMS in this repository are copies of
 > [DiscountArchive](https://docs.pyribs.org/en/stable/api/ribs.archives.DiscountArchive.html)
 > and
 > [DiscountModelManager](https://docs.pyribs.org/en/stable/api/ribs.discount_models.DiscountModelManager.html)
-> in pyribs. For a quick example of how to use DMS in pyribs, see the
+> from pyribs. For a quick example of how to use DMS in pyribs, see the
 > [Sphere example](https://docs.pyribs.org/en/stable/examples/sphere.html).
 
 ## Installation
