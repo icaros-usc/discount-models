@@ -514,7 +514,7 @@ requires-dist = [
     { name = "python-slugify", specifier = ">=8.0.4" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "requests", specifier = ">=2.32.5" },
-    { name = "ribs", extras = ["all"], specifier = "==0.10.0" },
+    { name = "ribs", extras = ["all"], specifier = "==0.11.0" },
     { name = "ruamel-yaml", specifier = ">=0.18.16" },
     { name = "seaborn", specifier = ">=0.13.2" },
     { name = "statsmodels", specifier = ">=0.14.6" },
@@ -2263,7 +2263,7 @@ wheels = [
 
 [[package]]
 name = "ribs"
-version = "0.10.0"
+version = "0.11.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "array-api-compat" },
@@ -2277,9 +2277,9 @@ dependencies = [
     { name = "threadpoolctl" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5d/ea/12554600812a91a7bcd35246f17343842671d2a0522927268d66ed73833b/ribs-0.10.0.tar.gz", hash = "sha256:f0cb51d3cb7c5aac6a3228b7915dc7b8657fb192a1a0a8baf48c7348acbb498c", size = 192608, upload-time = "2026-04-08T00:38:36.275Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f4/72/89914f49f2b2655f08f96ec1d2eb4597b42fbbeed7d54e90bfb09e9dc42e/ribs-0.11.0.tar.gz", hash = "sha256:048e7b447a45c8aa8c70846e769be55c40d73c3c80e7fbc134df82493a590243", size = 200401, upload-time = "2026-05-17T20:42:51.449Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0d/09/9d44568014ca7f017a35a33c065182c447f87aa822c8b4d3f58026642167/ribs-0.10.0-py3-none-any.whl", hash = "sha256:227c70ddd609c5848c02662a49b6704bee067564f0a02bf1b67e04b8830e4d78", size = 213339, upload-time = "2026-04-08T00:38:34.97Z" },
+    { url = "https://files.pythonhosted.org/packages/ac/19/eafcab1f75ddb7014a5e38585f0cf660f314e9907164bc471e4cde0d847f/ribs-0.11.0-py3-none-any.whl", hash = "sha256:960f37eaee8624dc95ddae47541b81fe0e55430ef97fb4dea5b066481fb9bcdb", size = 220066, upload-time = "2026-05-17T20:42:50.256Z" },
 ]
 
 [package.optional-dependencies]
@@ -2288,6 +2288,8 @@ all = [
     { name = "matplotlib" },
     { name = "pymoo" },
     { name = "shapely" },
+    { name = "torch" },
+    { name = "zuko" },
 ]
 
 [[package]]
