@@ -413,14 +413,18 @@ class LSIFace(EvaluateTorchMixin, DomainBase):
                     embeds, n_neighbors=1, return_distance=True
                 )
 
-                # Convert from cosine _distance_ to cosine _similarity_.
-                cosine_similarities = 1.0 - cosine_distances
+                if self.config.use_cosine_similarity:
+                    # Convert from cosine _distance_ to cosine _similarity_.
+                    cosine_vals = 1.0 - cosine_distances
+                else:
+                    # Use cosine distance as is.
+                    cosine_vals = cosine_distances
 
                 # (n, 1) -> (n,)
-                cosine_similarities = cosine_similarities.squeeze(-1)
+                cosine_vals = cosine_vals.squeeze(-1)
 
                 # Normalize to [0, 1].
-                centroid_objectives = (cosine_similarities + 1.0) / 2.0
+                centroid_objectives = (cosine_vals + 1.0) / 2.0
 
                 # Add the two objectives together, weighting them equally.
                 objectives = (objectives + centroid_objectives) / 2.0

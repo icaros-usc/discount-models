@@ -15,4 +15,5 @@ config:
   measure_dim: 512 # CLIP dimensionality for ViT-B/32
   space: "w_plus"
   add_centroid_dist: True
+  use_cosine_similarity: False
   centroids: "src/cvt/centroids/lhq_clip_embeddings_10k.npy"
